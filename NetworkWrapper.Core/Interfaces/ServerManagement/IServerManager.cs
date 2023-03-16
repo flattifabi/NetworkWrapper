@@ -15,7 +15,7 @@ namespace NetworkWrapper.Core.Interfaces.ServerManagement
         PacketReader PacketReader { get; set; }
         TcpClient Client { get; set; }
         event Action ConnectedEvent;
-        event Action DisconnectedEvent;
+        event Action CommandReceived;
         event Action AnotherClientConnectedEvent;
 
         ClientState ConnectToServer(string clientName, string ipAdress, int port);

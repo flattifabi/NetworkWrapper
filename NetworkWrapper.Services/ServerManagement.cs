@@ -17,7 +17,7 @@ namespace NetworkWrapper.Services
         public PacketReader PacketReader { get; set; }
 
         public event Action ConnectedEvent;
-        public event Action DisconnectedEvent;
+        public event Action CommandReceived;
         public event Action AnotherClientConnectedEvent;
 
         public ClientState ConnectToServer(string clientName, string ipAdress, int port)
@@ -30,10 +30,11 @@ namespace NetworkWrapper.Services
                 if(!string.IsNullOrEmpty(clientName))
                 {
                     return ClientState.WAITING;
-                    var connectPacket = new PacketBuilder();
-                    connectPacket.WriteOpCode(0);
-                    connectPacket.WriteString(clientName);
-                    Client.Client.Send(connectPacket.GetPacketBytes());
+                    //var connectPacket = new PacketBuilder();
+                    //connectPacket.WriteOpCode(0);
+                    //connectPacket.WriteString(clientName);
+                    //Client.Client.Send(connectPacket.GetPacketBytes());
+                    SendMessageToServer("Verbunden");
                 }
                 ReadPackets();
                 return ClientState.CONNECTED;
@@ -62,7 +63,7 @@ namespace NetworkWrapper.Services
                             ConnectedEvent?.Invoke();
                             break;
                         case 5:
-                            DisconnectedEvent?.Invoke();
+                            CommandReceived?.Invoke();
                             break;
                         case 10:
                             AnotherClientConnectedEvent?.Invoke();

@@ -22,6 +22,8 @@ namespace NetworkWrapper.Core.Packet
 
         public void WriteString(string message)
         {
+            if (message == null)
+                message = "Message was NULL";
             var messageLength = message.Length;
             byte[] buffer = BitConverter.GetBytes(messageLength);
             _ms.Write(BitConverter.GetBytes(messageLength), 0, buffer.Length);

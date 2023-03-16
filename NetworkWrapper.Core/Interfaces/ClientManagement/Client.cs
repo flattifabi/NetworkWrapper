@@ -20,11 +20,23 @@ namespace NetworkWrapper.Core.Interfaces.ClientManagement
             ClientSocket = client;
             UID = Guid.NewGuid();
             PacketReader = new PacketReader(ClientSocket.GetStream());
-            var opCode = PacketReader.ReadByte();
+            //var opCode = PacketReader.ReadByte();
             Username = PacketReader.ReadMessage();
-            Console.WriteLine($"{DateTime.Now} | Capacity {Console.ForegroundColor = ConsoleColor.Green}[{Username}] {Console.ForegroundColor = ConsoleColor.Green} has Connected to the Server");
+            WriteConnectedClientMessage(Username);
             Task.Run(() => Process());
         }
+        void WriteConnectedClientMessage(string value1)
+        {
+            Console.BackgroundColor = ConsoleColor.Green;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.Write("Connected");
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write(" [|] ");
+            Console.Write(value1 + $" hat sich mit dem Netzwerk verbunden [|] {DateTime.Now}\n");
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+
         void Process()
         {
             while (true)
@@ -44,12 +56,21 @@ namespace NetworkWrapper.Core.Interfaces.ClientManagement
                 }
                 catch (Exception)
                 {
-                    Console.WriteLine($"[{UID.ToString()}]: Disconnected");
-                    Program.BroadcastDisconnect(UID.ToString());
+                    WriteDisConnectedClientMessage(Username);
                     ClientSocket.Close();
                     break;
                 }
             }
+        }
+        void WriteDisConnectedClientMessage(string value1)
+        {
+            Console.BackgroundColor = ConsoleColor.Red;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.Write("Disconnected");
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write(" [|] ");
+            Console.Write(value1 + $" hat das Netzwerk verlassen [|] {DateTime.Now}\n");
         }
     }
 }

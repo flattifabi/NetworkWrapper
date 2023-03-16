@@ -1,4 +1,5 @@
 ﻿using NetworkWrapper.Core.Enums;
+using NetworkWrapper.Core.Packet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,8 +11,10 @@ namespace NetworkWrapper.Core.Interfaces.ClientManagement
 {
     public interface IClientManager
     {
-        Client Client { get; set; }
-        TcpListener Listener { get; set; }
-        ClientState InitializeClient(string clientName, string ipAddress, int port);
+        Client ClientAPI { get; set; }
+        TcpClient Client { get; set; }
+        PacketReader PacketReader { get; set; }
+        event Action ClientInitialized;
+        void InitializeClient(string clientName, string ipAddress, int port);
     }
 }

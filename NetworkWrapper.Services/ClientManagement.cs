@@ -1,5 +1,6 @@
 ﻿using NetworkWrapper.Core.Enums;
 using NetworkWrapper.Core.Interfaces.ClientManagement;
+using NetworkWrapper.Core.Packet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,34 +13,22 @@ namespace NetworkWrapper.Services
 {
     public class ClientManagement : IClientManager
     {
-        public Client Client { get; set; }
-        public TcpListener Listener { get; set; }
+        public Client ClientAPI { get; set; }
+        public TcpClient Client { get; set; }
+        public PacketReader PacketReader { get; set; }
 
-        public ClientState InitializeClient(string clientName, string ipAddress, int port)
+        public event Action ClientInitialized;
+
+        public void InitializeClient(string clientName, string ipAddress, int port)
         {
-            try
-            {
-                Listener = new TcpListener(IPAddress.Parse(ipAddress), port);
-                Listener.Start();
-                return ClientState.WAITING;
-                Client = new Client(Listener.AcceptTcpClient());
-                return ClientState.CONNECTED;
-            }
-            catch(ArgumentOutOfRangeException ArgumentEx) 
-            {
-                return ClientState.NONE;
-                throw;
-            }
-            catch(InvalidOperationException invalidEx)
-            {
-                return ClientState.NONE;
-                throw;
-            }
-            catch(SocketException) 
-            {
-                return ClientState.NONE;
-                throw;
-            }
+            Client = new TcpClient();
+            Client.Connect(ipAddress, port);
+            PacketReader = new PacketReader(Client.GetStream());
+            var connectPacket = new PacketBuilder();
+            connectPacket.WriteOpCode(0);
+            connectPacket.WriteString(clientName);
+            Client.Client.Send(connectPacket.GetPacketBytes());
+            ClientInitialized?.Invoke();
         }
     }
 }
